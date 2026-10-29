@@ -1,5 +1,6 @@
 # The Daily Brief - container image for the Django news capstone.
-FROM python:3.12-slim
+# 3.14 matches the interpreter the project is developed and tested on locally.
+FROM python:3.14-slim
 
 # PYTHONDONTWRITEBYTECODE / PIP_NO_CACHE_DIR keep the image small;
 # PYTHONUNBUFFERED makes Django's request log appear immediately rather than
