@@ -1,0 +1,6 @@
+# Git converts LF to CRLF on checkout here (core.autocrlf=true). Docker reads
+# these files from disk, so they must keep the Linux line endings or the build
+# fails on a stray carriage-return character.
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+*.sh text eol=lf

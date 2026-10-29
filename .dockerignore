@@ -1,0 +1,38 @@
+# Never sent to the Docker daemon. Anything listed here also cannot end up in
+# the image by accident, including secrets and the local database.
+.git
+.gitignore
+
+# The local virtual environment is hundreds of MB of Windows executables that a
+# Linux image cannot use.
+myenv/
+venv/
+env/
+ENV/
+
+# Local secrets must not be baked into a shareable image. The container is
+# configured with -e / --env-file at run time instead.
+.env
+
+# Runtime data and scratch files belonging to this machine only.
+db.sqlite3
+tmp/
+news_data_backup.json
+*.log
+media/
+
+# Python build residue.
+__pycache__/
+**/__pycache__/
+*.py[cod]
+
+# Documentation and API scratch files are not needed to serve the app.
+docs/
+postman/
+.postman/
+Capstone_Project_Completion_Report.pdf
+README.md
+
+# Docker's own inputs would only invalidate the build cache.
+Dockerfile
+.dockerignore
