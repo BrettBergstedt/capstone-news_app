@@ -1,3 +1,11 @@
+"""Server-rendered HTML views for the Daily Brief website.
+
+These function-based views power the pages a reader sees in a browser, while
+`views.py` supplies the JSON API. Where a page must behave identically to the
+API, it calls the API view instead of duplicating the logic, so the two cannot
+drift apart.
+"""
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import PermissionDenied
@@ -10,6 +18,11 @@ from .views import ApproveArticleView
 
 
 def article_list(request):
+    """Render every approved article.
+
+    `select_related` pulls each article's author and publisher into the same
+    query; without it the template would run an extra query per row.
+    """
     articles = Article.objects.filter(approved=True).select_related(
         "author", "publisher"
     )
@@ -17,6 +30,11 @@ def article_list(request):
 
 
 def article_detail(request, pk):
+    """Render one approved article, or return a 404 if there is none.
+
+    The approval filter is part of the query rather than a check afterwards, so
+    an unapproved article cannot be reached even by guessing its primary key.
+    """
     article = get_object_or_404(
         Article.objects.filter(approved=True).select_related("author", "publisher"),
         pk=pk,
@@ -26,6 +44,12 @@ def article_detail(request, pk):
 
 @login_required
 def article_create(request):
+    """Let a journalist submit an article for editorial review.
+
+    The role check is done here as well as in the form, and `author` is taken
+    from the logged-in session twice over - on `form.instance` and on the saved
+    object - so a crafted POST cannot claim to be written by someone else.
+    """
     if request.user.role != User.Role.JOURNALIST and not request.user.is_superuser:
         raise PermissionDenied("Only journalists can submit articles.")
 
@@ -43,6 +67,7 @@ def article_create(request):
 
 @login_required
 def pending_articles(request):
+    """Show an editor the articles still waiting for a decision."""
     if request.user.role != User.Role.EDITOR and not request.user.is_superuser:
         raise PermissionDenied("Only editors can review articles.")
     articles = Article.objects.filter(approved=False).select_related(
@@ -58,6 +83,13 @@ def pending_articles(request):
 @login_required
 @require_POST
 def approve_article(request, pk):
+    """Approve a pending article by delegating to the API view.
+
+    `@require_POST` matters: approving sends email to every subscriber, so a
+    GET request must never trigger it. Without the decorator a browser
+    prefetch, a link scanner or an image proxy could publish an article by
+    loading the page.
+    """
     if request.user.role != User.Role.EDITOR and not request.user.is_superuser:
         raise PermissionDenied("Only editors can approve articles.")
 
@@ -71,6 +103,11 @@ def approve_article(request, pk):
 
 
 def newsletter_list(request):
+    """Render every newsletter with its articles.
+
+    `prefetch_related` is used rather than `select_related` because `articles`
+    is a many-to-many relation, which cannot be joined in a single query.
+    """
     newsletters = Newsletter.objects.select_related("author").prefetch_related(
         "articles"
     )
@@ -83,6 +120,13 @@ def newsletter_list(request):
 
 @login_required
 def newsletter_create(request):
+    """Let a journalist or editor assemble and save a newsletter.
+
+    `commit=False` saves the newsletter without its many-to-many articles,
+    because the author must be set from the session before the row is written;
+    `save_m2m()` then attaches the chosen articles afterwards. Omitting that
+    second call would silently create a newsletter with no content.
+    """
     if request.user.role not in (User.Role.JOURNALIST, User.Role.EDITOR):
         raise PermissionDenied("Only journalists and editors can create newsletters.")
 
