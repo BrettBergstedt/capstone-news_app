@@ -1,0 +1,16 @@
+{% extends 'news/base.html' %}
+{% block content %}
+<h1>Articles awaiting approval</h1>
+{% for article in articles %}
+<div class="card">
+  <h2>{{ article.title }}</h2>
+  <p class="muted">{% if article.author %}Journalist: {{ article.author.username }}{% else %}Publisher: {{ article.publisher.name }}{% endif %}</p>
+  <p>{{ article.content|truncatewords:40 }}</p>
+  <form method="post" action="{% url 'web:approve-article' article.pk %}">
+    {% csrf_token %}<button type="submit">Approve and notify subscribers</button>
+  </form>
+</div>
+{% empty %}
+<div class="card">There are no articles waiting for approval.</div>
+{% endfor %}
+{% endblock %}

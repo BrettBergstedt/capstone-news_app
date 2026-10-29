@@ -1,0 +1,22 @@
+$kind: http-request
+method: POST
+url: '{{base_url}}/api/articles/'
+order: 3000
+headers:
+  - key: Authorization
+    value: 'Token {{journalist_token}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Postman demonstration article",
+      "content": "This article was submitted through the Postman collection."
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Journalist article is created', function () { pm.response.to.have.status(201); });
+      pm.environment.set('pending_article_id', pm.response.json().id);

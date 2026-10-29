@@ -1,0 +1,10 @@
+{% extends 'news/base.html' %}
+{% block title %}{{ article.title }} | The Daily Brief{% endblock %}
+{% block content %}
+<article class="card">
+  <p class="muted">{% if article.author %}By {{ article.author.username }}{% else %}Published by {{ article.publisher.name }}{% endif %} · {{ article.created_at|date:"j M Y, H:i" }}</p>
+  <h1>{{ article.title }}</h1>
+  <div>{{ article.content|linebreaks }}</div>
+</article>
+<a href="{% url 'web:article-list' %}">← All articles</a>
+{% endblock %}

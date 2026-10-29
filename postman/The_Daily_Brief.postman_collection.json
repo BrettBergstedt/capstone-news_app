@@ -1,0 +1,203 @@
+{
+  "info": {
+    "_postman_id": "3aa1b3b0-9140-4d64-b067-487acf3ea81b",
+    "name": "The Daily Brief API",
+    "description": "Manual API checks for the Django News App capstone. Fill in role credentials in the local environment before running the requests.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public endpoints",
+      "item": [
+        {
+          "name": "List approved articles",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/articles/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Returns success', function () { pm.response.to.have.status(200); });",
+              "pm.test('Returns an article list', function () { pm.expect(pm.response.json()).to.be.an('array'); });"
+            ]}
+          }]
+        },
+        {
+          "name": "List publishers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{base_url}}/api/publishers/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Returns success', function () { pm.response.to.have.status(200); });"
+            ]}
+          }]
+        }
+      ]
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "Register reader account",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"{{new_reader_username}}\",\n  \"email\": \"{{new_reader_email}}\",\n  \"password\": \"{{new_reader_password}}\"\n}"},
+            "url": "{{base_url}}/api/users/register/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Reader account is created', function () { pm.response.to.have.status(201); });",
+              "pm.test('Password is never returned', function () { pm.expect(pm.response.json()).not.to.have.property('password'); });"
+            ]}
+          }]
+        },
+        {
+          "name": "Reader token login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"{{reader_username}}\",\n  \"password\": \"{{reader_password}}\"\n}"},
+            "url": "{{base_url}}/api/token/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Reader token is returned', function () { pm.response.to.have.status(200); });",
+              "pm.environment.set('reader_token', pm.response.json().token);"
+            ]}
+          }]
+        },
+        {
+          "name": "Journalist token login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"{{journalist_username}}\",\n  \"password\": \"{{journalist_password}}\"\n}"},
+            "url": "{{base_url}}/api/token/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Journalist token is returned', function () { pm.response.to.have.status(200); });",
+              "pm.environment.set('journalist_token', pm.response.json().token);"
+            ]}
+          }]
+        },
+        {
+          "name": "Editor token login",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Content-Type", "value": "application/json"}],
+            "body": {"mode": "raw", "raw": "{\n  \"username\": \"{{editor_username}}\",\n  \"password\": \"{{editor_password}}\"\n}"},
+            "url": "{{base_url}}/api/token/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Editor token is returned', function () { pm.response.to.have.status(200); });",
+              "pm.environment.set('editor_token', pm.response.json().token);"
+            ]}
+          }]
+        }
+      ]
+    },
+    {
+      "name": "Role-based actions",
+      "item": [
+        {
+          "name": "Reader profile",
+          "request": {
+            "method": "GET",
+            "header": [{"key": "Authorization", "value": "Token {{reader_token}}"}],
+            "url": "{{base_url}}/api/users/me/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Reader profile is available', function () { pm.response.to.have.status(200); });",
+              "pm.test('Role is reader', function () { pm.expect(pm.response.json().role).to.eql('reader'); });"
+            ]}
+          }]
+        },
+        {
+          "name": "Reader cannot submit an article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Token {{reader_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Rejected reader article\",\n  \"content\": \"Readers may not submit articles.\"\n}"},
+            "url": "{{base_url}}/api/articles/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Reader is denied', function () { pm.response.to.have.status(403); });"
+            ]}
+          }]
+        },
+        {
+          "name": "Journalist submits an article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Token {{journalist_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Postman demonstration article\",\n  \"content\": \"This article was submitted through the Postman collection.\"\n}"},
+            "url": "{{base_url}}/api/articles/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Journalist article is created', function () { pm.response.to.have.status(201); });",
+              "pm.environment.set('pending_article_id', pm.response.json().id);"
+            ]}
+          }]
+        },
+        {
+          "name": "Editor approves submitted article",
+          "request": {
+            "method": "POST",
+            "header": [{"key": "Authorization", "value": "Token {{editor_token}}"}],
+            "url": "{{base_url}}/api/articles/{{pending_article_id}}/approve/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Editor approval succeeds', function () { pm.response.to.have.status(200); });",
+              "pm.test('Article is approved', function () { pm.expect(pm.response.json().article.approved).to.eql(true); });"
+            ]}
+          }]
+        },
+        {
+          "name": "Create newsletter with approved article",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Token {{journalist_token}}"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {"mode": "raw", "raw": "{\n  \"title\": \"Postman demonstration newsletter\",\n  \"description\": \"A newsletter created through Postman.\",\n  \"articles\": [{{pending_article_id}}]\n}"},
+            "url": "{{base_url}}/api/newsletters/"
+          },
+          "event": [{
+            "listen": "test",
+            "script": {"type": "text/javascript", "exec": [
+              "pm.test('Newsletter is created', function () { pm.response.to.have.status(201); });"
+            ]}
+          }]
+        }
+      ]
+    }
+  ]
+}

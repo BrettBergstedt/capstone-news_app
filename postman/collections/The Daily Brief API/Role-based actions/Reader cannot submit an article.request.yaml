@@ -1,0 +1,21 @@
+$kind: http-request
+method: POST
+url: '{{base_url}}/api/articles/'
+order: 2000
+headers:
+  - key: Authorization
+    value: 'Token {{reader_token}}'
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "title": "Rejected reader article",
+      "content": "Readers may not submit articles."
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Reader is denied', function () { pm.response.to.have.status(403); });

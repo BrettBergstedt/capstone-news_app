@@ -1,0 +1,3 @@
+$kind: collection
+name: The Daily Brief API
+description: 'Manual API checks for the Django News App capstone. Fill in role credentials in the local environment before running the requests.'

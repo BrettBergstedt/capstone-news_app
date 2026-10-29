@@ -1,0 +1,58 @@
+name: The Daily Brief - Local
+values:
+  - key: base_url
+    value: 'http://127.0.0.1:8000'
+    enabled: true
+    type: default
+  - key: reader_username
+    value: ''
+    enabled: true
+    type: default
+  - key: reader_password
+    value: ''
+    enabled: true
+    type: secret
+  - key: journalist_username
+    value: ''
+    enabled: true
+    type: default
+  - key: journalist_password
+    value: ''
+    enabled: true
+    type: secret
+  - key: editor_username
+    value: ''
+    enabled: true
+    type: default
+  - key: editor_password
+    value: ''
+    enabled: true
+    type: secret
+  - key: new_reader_username
+    value: postman_reader
+    enabled: true
+    type: default
+  - key: new_reader_email
+    value: postman_reader@example.com
+    enabled: true
+    type: default
+  - key: new_reader_password
+    value: ''
+    enabled: true
+    type: secret
+  - key: reader_token
+    value: ''
+    enabled: true
+    type: secret
+  - key: journalist_token
+    value: ''
+    enabled: true
+    type: secret
+  - key: editor_token
+    value: ''
+    enabled: true
+    type: secret
+  - key: pending_article_id
+    value: ''
+    enabled: true
+    type: default

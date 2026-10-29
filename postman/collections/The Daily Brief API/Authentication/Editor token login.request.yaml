@@ -1,0 +1,20 @@
+$kind: http-request
+method: POST
+url: '{{base_url}}/api/token/'
+order: 4000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{editor_username}}",
+      "password": "{{editor_password}}"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Editor token is returned', function () { pm.response.to.have.status(200); });
+      pm.environment.set('editor_token', pm.response.json().token);

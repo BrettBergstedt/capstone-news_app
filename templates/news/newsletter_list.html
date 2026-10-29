@@ -1,0 +1,18 @@
+{% extends 'news/base.html' %}
+{% block content %}
+<h1>Newsletters</h1>
+{% if user.role == 'journalist' or user.role == 'editor' %}
+<p><a class="button" href="{% url 'web:newsletter-create' %}">Create newsletter</a></p>
+{% endif %}
+{% for newsletter in newsletters %}
+<div class="card">
+  <h2>{{ newsletter.title }}</h2>
+  <p>{{ newsletter.description }}</p>
+  <p class="muted">Curated by {{ newsletter.author.username }} · {{ newsletter.created_at|date:"j M Y" }}</p>
+  <h3>Included articles</h3>
+  <ul>{% for article in newsletter.articles.all %}<li>{{ article.title }}</li>{% empty %}<li>No articles added yet.</li>{% endfor %}</ul>
+</div>
+{% empty %}
+<div class="card">No newsletters have been created yet.</div>
+{% endfor %}
+{% endblock %}

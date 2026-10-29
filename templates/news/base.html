@@ -1,0 +1,13 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}The Daily Brief{% endblock %}</title>
+  <style>
+    :root{font-family:Arial,sans-serif;color:#202938;background:#f4f6f8}body{margin:0}header{background:#172b4d;color:white;padding:1rem 5%;display:flex;justify-content:space-between;align-items:center;gap:1rem;flex-wrap:wrap}header a{color:white;margin-right:1rem;text-decoration:none}main{max-width:950px;margin:2rem auto;padding:0 1rem}.card{background:white;padding:1.2rem;margin:1rem 0;border-radius:10px;box-shadow:0 2px 8px #0000000d}input,textarea,select{box-sizing:border-box;width:100%;padding:.7rem;margin:.3rem 0 1rem;border:1px solid #bcc5d0;border-radius:5px}button,.button{background:#176b87;color:white;border:0;padding:.7rem 1rem;border-radius:5px;text-decoration:none;cursor:pointer}.message{padding:.8rem;background:#e5f5e9;border-radius:5px}.muted{color:#667085}footer{text-align:center;padding:2rem;color:#667085}
+  </style>
+</head>
+<body>
+<header><div><a href="{% url 'web:article-list' %}"><strong>The Daily Brief</strong></a></div><nav><a href="{% url 'web:article-list' %}">Articles</a><a href="{% url 'web:newsletter-list' %}">Newsletters</a>{% if user.is_authenticated %}{% if user.role == 'journalist' %}<a href="{% url 'web:article-create' %}">Submit article</a>{% endif %}{% if user.role == 'editor' %}<a href="{% url 'web:pending-articles' %}">Review articles</a>{% endif %}<form method="post" action="{% url 'logout' %}" style="display:inline">{% csrf_token %}<button type="submit">Log out ({{ user.username }})</button></form>{% else %}<a href="{% url 'login' %}">Log in</a>{% endif %}</nav></header>
+<main>{% if messages %}{% for message in messages %}<p class="message">{{ message }}</p>{% endfor %}{% endif %}{% block content %}{% endblock %}</main><footer>Independent journalism. Clear reporting.</footer>
+</body></html>

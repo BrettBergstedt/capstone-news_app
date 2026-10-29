@@ -1,0 +1,13 @@
+$kind: http-request
+method: GET
+url: '{{base_url}}/api/users/me/'
+order: 1000
+headers:
+  - key: Authorization
+    value: 'Token {{reader_token}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Reader profile is available', function () { pm.response.to.have.status(200); });
+      pm.test('Role is reader', function () { pm.expect(pm.response.json().role).to.eql('reader'); });

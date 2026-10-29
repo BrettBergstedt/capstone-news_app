@@ -1,0 +1,13 @@
+$kind: http-request
+method: POST
+url: '{{base_url}}/api/articles/{{pending_article_id}}/approve/'
+order: 4000
+headers:
+  - key: Authorization
+    value: 'Token {{editor_token}}'
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Editor approval succeeds', function () { pm.response.to.have.status(200); });
+      pm.test('Article is approved', function () { pm.expect(pm.response.json().article.approved).to.eql(true); });

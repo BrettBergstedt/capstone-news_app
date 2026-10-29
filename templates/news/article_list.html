@@ -1,0 +1,16 @@
+{% extends 'news/base.html' %}
+{% block title %}Latest news | The Daily Brief{% endblock %}
+{% block content %}
+<h1>Latest news</h1>
+<p class="muted">Approved stories from publishers and independent journalists.</p>
+{% for article in articles %}
+<article class="card">
+  <h2><a href="{% url 'web:article-detail' article.pk %}">{{ article.title }}</a></h2>
+  <p class="muted">By {% if article.author %}{{ article.author.username }}{% else %}{{ article.publisher.name }}{% endif %} · {{ article.created_at|date:"j M Y, H:i" }}</p>
+  <p>{{ article.content|truncatewords:35 }}</p>
+  <a class="button" href="{% url 'web:article-detail' article.pk %}">Read article</a>
+</article>
+{% empty %}
+<div class="card">No approved articles have been published yet.</div>
+{% endfor %}
+{% endblock %}

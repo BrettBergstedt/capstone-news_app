@@ -1,0 +1,20 @@
+$kind: http-request
+method: POST
+url: '{{base_url}}/api/token/'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{journalist_username}}",
+      "password": "{{journalist_password}}"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Journalist token is returned', function () { pm.response.to.have.status(200); });
+      pm.environment.set('journalist_token', pm.response.json().token);

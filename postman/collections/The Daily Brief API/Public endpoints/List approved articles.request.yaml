@@ -1,0 +1,10 @@
+$kind: http-request
+method: GET
+url: '{{base_url}}/api/articles/'
+order: 1000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Returns success', function () { pm.response.to.have.status(200); });
+      pm.test('Returns an article list', function () { pm.expect(pm.response.json()).to.be.an('array'); });

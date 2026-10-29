@@ -1,0 +1,21 @@
+$kind: http-request
+method: POST
+url: '{{base_url}}/api/users/register/'
+order: 1000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "username": "{{new_reader_username}}",
+      "email": "{{new_reader_email}}",
+      "password": "{{new_reader_password}}"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test('Reader account is created', function () { pm.response.to.have.status(201); });
+      pm.test('Password is never returned', function () { pm.expect(pm.response.json()).not.to.have.property('password'); });
