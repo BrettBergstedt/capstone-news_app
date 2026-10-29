@@ -142,3 +142,7 @@ news_data_backup.json
 postman/*.local.postman_environment.json
 
 /requirements
+
+# Sphinx: the generated HTML under docs/_build/html is committed on purpose,
+# but .doctrees is Sphinx's internal rebuild cache and should not be tracked.
+docs/_build/.doctrees/
