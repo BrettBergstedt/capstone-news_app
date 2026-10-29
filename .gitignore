@@ -142,3 +142,9 @@ news_data_backup.json
 postman/*.local.postman_environment.json
 
 /requirements
+
+# Sphinx: the generated HTML under docs/_build/html is committed on purpose,
+# but .doctrees is Sphinx's internal rebuild cache and .buildinfo is a
+# timestamp file - both are build residue, not documentation.
+.doctrees/
+docs/_build/html/.buildinfo
